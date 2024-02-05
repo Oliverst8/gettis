@@ -4,3 +4,4 @@
     -gettis installer & updater
     -Progress bar when testing
     -Amount of tests passed
+    -gettis submit
