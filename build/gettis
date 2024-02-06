@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Colors
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
+GREEN='[0;32m'
+RED='[0;31m'
+NC='[0m' # No Color
 
 # Check if the correct number of arguments is provided
 if [ "$#" -ne 1 ]; then
@@ -54,7 +54,7 @@ for input_file in "${input_files[@]}"; do
 		if [ "$mismatch_found" = false ]; then
 			echo "------------------------------------------------------"
 		fi
-		echo -e "${RED}Mismatch found for input file❌❌❌: $input_file${NC}"
+		echo -e "${RED}Mismatch found for input file: $input_file${NC}"
 		echo -e "${RED}  Outcome:${NC}"
 		echo -e "${RED}$java_output${NC}" | sed 's/^/  /' # Add two spaces of indentation to each line
 		echo -e "${RED}  Expected:${NC}"
@@ -70,6 +70,6 @@ rm -f "$java_file.class"
 # Print a message if everything is correct
 if [ "$mismatch_found" = false ]; then
 	echo "---------------------------------"
-	echo -e "${GREEN}All tests passed✅✅✅${NC}"
+	echo -e "${GREEN}All tests passed${NC}"
 	echo "---------------------------------"
 fi
