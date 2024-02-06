@@ -21,3 +21,11 @@ else
 fi
 ./build.sh
 cp -f ./build/gettis ~/bin/gettis
+
+
+if ! grep -q "export PATH=\$PATH:~/bin" ~/.bashrc; then
+    echo "# export ~/bin to PATH - required for gettis to run" >> ~/.bashrc
+    echo "export PATH=\$PATH:~/bin" >> ~/.bashrc
+fi
+
+echo "Succesfully installed gettis"
