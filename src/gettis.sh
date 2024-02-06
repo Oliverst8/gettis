@@ -1,3 +1,10 @@
+case $1 in
+	"init")
+		init $2
+		exit
+		;;
+esac
+
 # Colors
 GREEN='\033[0;32m'
 RED='\033[0;31m'
