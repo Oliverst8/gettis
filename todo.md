@@ -1,5 +1,5 @@
 #TODO
-    -gettis create
+    -gettis init
     -gettis test
     -gettis installer & updater
     -gettis builder

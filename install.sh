@@ -10,7 +10,7 @@ fi
 if [ -f ~/bin/gettis ]; then
     echo -n "gettis is already installed. Do you want to update? [Y/n] " 
     read answer
-     if [ "$answer" != "${answer#[Yy]}" ] ;then
+    if [ "$answer" != "${answer#[Yy]}" ] ;then
         echo "Updating gettis..."
     else
         echo "Not updating gettis."
