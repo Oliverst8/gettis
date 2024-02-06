@@ -1,43 +1,45 @@
 #!/bin/bash
 
-if [ -d ./build ]; then
-    echo "build directory already exists."
-else
-    echo "Creating /build directory..."
-    mkdir ./build
-fi
-
-# Initialize an empty string to hold all function definitions
-all_functions=""
-
-# Iterate over all shell script files in the src directory
-for file in src/*.sh; do
-    # Skip the 'gettis' script
-    if [[ $file != "src/gettis.sh" ]]; then
-        # Set a flag to false indicating we're not inside a function
-        inside_function=false
-
-        # Read the file line by line
-        while IFS= read -r line; do
-            # If the line starts with 'function', set the flag to true
-            if [[ $line == function* ]]; then
-                inside_function=true
-            fi
-
-            # If we're inside a function, append the line to the functions string
-            if $inside_function; then
-                all_functions+="$line\n"
-            fi
-
-            # If the line is a '}', we've reached the end of a function
-            if [[ $line == "}" ]]; then
-                inside_function=false
-            fi
-        done < "$file"
+# Function to check if build directory exists and create it if not
+check_and_create_build_directory() {
+    if [ -d ./build ]; then
+        echo "build directory already exists."
+    else
+        echo "Creating /build directory..."
+        mkdir ./build
     fi
-done
+}
 
-# Prepend the function definitions to the 'gettis' script and write to a new file called 'gettis' in the current directory
+# Function to extract functions from shell script files in the src directory
+extract_functions_from_files() {
+    local all_functions=""
+    for file in src/*.sh; do
+        if [[ $file != "src/gettis.sh" ]]; then
+            local inside_function=false
+            while IFS= read -r line; do
+                if [[ $line == function* ]]; then
+                    inside_function=true
+                fi
+                if $inside_function; then
+                    all_functions+="$line\n"
+                fi
+                if [[ $line == "}" ]]; then
+                    inside_function=false
+                    echo "Found function: end"
+                fi
+            done < "$file"
+        fi
+    done
+    echo "$all_functions"
+}
+
+# Call the function to check and create build directory
+check_and_create_build_directory
+
+# Extract functions from shell script files
+all_functions=$(extract_functions_from_files)
+
+# Prepend functions to the gettis script
 echo "creating build"
-echo -e "$all_functions$(cat src/gettis.sh)" > ./build/gettis
+echo -e "#!/bin/bash\n$all_functions\n$(cat src/gettis.sh)" > ./build/gettis
 chmod +x ./build/gettis

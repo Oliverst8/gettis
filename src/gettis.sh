@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Colors
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -14,14 +12,7 @@ fi
 # Extract Java file name without extension
 java_file=$(basename "$1" .java)
 
-# Check if test files exist, and download them if not
-if [ ! "$(ls *.in 2>/dev/null)" ] || [ ! "$(ls *.ans 2>/dev/null)" ]; then
-	echo "Downloading test files..."
-	curl -O "https://open.kattis.com/problems/${java_file}/file/statement/samples.zip"
-	echo "Test files downloaded to 'samples.zip'"
-	unzip -q samples.zip
-	rm samples.zip
-fi
+fetch java_file
 
 # Compile the Java file
 javac "$1"
