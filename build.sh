@@ -11,35 +11,20 @@ check_and_create_build_directory() {
 }
 
 # Function to extract functions from shell script files in the src directory
-extract_functions_from_files() {
-    local all_functions=""
+extract_lines_from_files() {
     for file in src/*.sh; do
         if [[ $file != "src/gettis.sh" ]]; then
-            local inside_function=false
             while IFS= read -r line; do
-                if [[ $line == function* ]]; then
-                    inside_function=true
-                fi
-                if $inside_function; then
-                    all_functions+="$line\n"
-                fi
-                if [[ $line == "}" ]]; then
-                    inside_function=false
-                    echo "Found function: end"
-                fi
+                echo "$line"
             done < "$file"
         fi
     done
-    echo "$all_functions"
 }
 
 # Call the function to check and create build directory
 check_and_create_build_directory
 
-# Extract functions from shell script files
-all_functions=$(extract_functions_from_files)
-
 # Prepend functions to the gettis script
 echo "creating build"
-echo -e "#!/bin/bash\n$all_functions\n$(cat src/gettis.sh)" > ./build/gettis
+extract_lines_from_files > build/gettis
 chmod +x ./build/gettis
