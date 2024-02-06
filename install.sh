@@ -19,4 +19,5 @@ if [ -f ~/bin/gettis ]; then
 else
     echo "Installing gettis..."
 fi
-cp -f ./src/gettis ~/bin/gettis
+./build.sh
+cp -f ./build/gettis ~/bin/gettis
