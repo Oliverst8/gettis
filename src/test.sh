@@ -1,11 +1,15 @@
 test() {
     local java_file=$(basename "$1" .java)
+    local total_tests=0
+    local passed_tests=0
+    local progress=""
 
     fetch "$java_file"
 
     # Colors
     GREEN='\033[0;32m'
     RED='\033[0;31m'
+    WHITE='\033[0;37m'
     NC='\033[0m' # No Color
 
     # Compile the Java file
@@ -25,6 +29,9 @@ test() {
 
     # Loop through each input file
     for input_file in "${input_files[@]}"; do
+        # Increment total tests
+        ((total_tests++))
+
         # Form the output file name based on the input file
         local output_file="${input_file%.in}.ans"
 
@@ -44,9 +51,30 @@ test() {
             echo -e "${RED}$java_output${NC}" | sed 's/^/  /' # Add two spaces of indentation to each line
             echo -e "${RED}  Expected:${NC}"
             echo -e "${RED}$expected_output${NC}" | sed 's/^/  /' # Add two spaces of indentation to each line
+            printf "\n"
             echo "------------------------------------------------------"
             mismatch_found=true
+            progress+="${RED}X"
+        else
+            ((passed_tests++))
+            progress+="${GREEN}#"
         fi
+
+        # Print updating progress bar
+        printf "\033[1A"  # Move cursor one line up
+        printf "\033[1A"  # Move cursor one line up
+        printf "\033[1A"  # Move cursor one line up
+        printf "\n"
+        printf "\r[${progress}"
+        for ((i = total_tests + 1; i <= ${#input_files[@]}; i++)); do
+            printf "${WHITE}-"
+        done
+        printf "${NC}] $passed_tests/${#input_files[@]} tests passed"
+        printf "\033[1E"  # Move cursor one line down
+        printf "\033[1E"  # Move cursor one line down
+        
+    
+
     done
 
     # Clean up compiled class files
@@ -59,4 +87,3 @@ test() {
         echo "---------------------------------"
     fi
 }
-#End of file
