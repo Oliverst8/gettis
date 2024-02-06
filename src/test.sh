@@ -1,0 +1,62 @@
+test() {
+    local java_file=$(basename "$1" .java)
+
+    fetch "$java_file"
+
+    # Colors
+    GREEN='\033[0;32m'
+    RED='\033[0;31m'
+    NC='\033[0m' # No Color
+
+    # Compile the Java file
+    javac "$java_file.java"
+
+    # Check if compilation was successful
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Compilation failed. Exiting.${NC}"
+        exit 1
+    fi
+
+    # Get a list of input files
+    local input_files=(*.in)
+
+    # Variable to track whether there are mismatches
+    local mismatch_found=false
+
+    # Loop through each input file
+    for input_file in "${input_files[@]}"; do
+        # Form the output file name based on the input file
+        local output_file="${input_file%.in}.ans"
+
+        # Execute the compiled Java program with the current input file
+        local java_output=$(java "$java_file" <"$input_file")
+
+        # Get the expected output
+        local expected_output=$(cat "$output_file")
+
+        # Compare the generated output with the expected output
+        if [ "$java_output" != "$expected_output" ]; then
+            if [ "$mismatch_found" = false ]; then
+                echo "------------------------------------------------------"
+            fi
+            echo -e "${RED}Mismatch found for input file: $input_file${NC}"
+            echo -e "${RED}  Outcome:${NC}"
+            echo -e "${RED}$java_output${NC}" | sed 's/^/  /' # Add two spaces of indentation to each line
+            echo -e "${RED}  Expected:${NC}"
+            echo -e "${RED}$expected_output${NC}" | sed 's/^/  /' # Add two spaces of indentation to each line
+            echo "------------------------------------------------------"
+            mismatch_found=true
+        fi
+    done
+
+    # Clean up compiled class files
+    rm -f "$java_file.class"
+
+    # Print a message if everything is correct
+    if [ "$mismatch_found" = false ]; then
+        echo "---------------------------------"
+        echo -e "${GREEN}All tests passed${NC}"
+        echo "---------------------------------"
+    fi
+}
+#End of file

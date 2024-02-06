@@ -1,11 +1,8 @@
 #TODO
-    -gettis init
     -gettis test
-    -gettis installer & updater
-    -gettis builder
     -Progress bar when testing
     -Amount of tests passed
     -gettis submit
-    -fix color issue when building
     -create path export to bashrc when installing
     -add bin bash to top when building
+    -create readme

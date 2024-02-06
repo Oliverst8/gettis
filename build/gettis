@@ -1,0 +1,115 @@
+# Check if test files exist, and download them if not
+function fetch() {
+if [ ! "$(ls *.in 2>/dev/null)" ] || [ ! "$(ls *.ans 2>/dev/null)" ]; then
+	echo "Downloading test files..."
+	curl -O "https://open.kattis.com/problems/$1/file/statement/samples.zip"
+	echo "Test files downloaded to 'samples.zip'"
+	unzip -q samples.zip
+	rm samples.zip
+fi
+}
+function init() {
+
+    # Extract Java file name without extension
+    kattis_ID=$(basename "$1" .java)
+
+    if [ "$#" -ne 1 ]; then
+        echo "Usage: ${kattis_ID} <KattisProblemId>"
+        exit 1
+    fi
+    if [ -d "./$1" ]; then
+        echo -n "Do you want to overwrite the current ${kattis_ID} directory? [y/N] "
+        read answer
+        if [ "$answer" != "${answer#[Yy]}" ] ;then
+            rm -r "./${kattis_ID}"
+            mkdir "./${kattis_ID}"
+        else
+            echo "Could not initialize."
+            exit
+        fi
+    else
+        mkdir "./${kattis_ID}"
+    fi
+    cd "./$kattis_ID"
+    fetch "$kattis_ID"
+    echo "import java.util.Scanner;
+
+public class ${kattis_ID} {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+    }
+}" > "${kattis_ID}.java"
+
+}
+test() {
+    local java_file=$(basename "$1" .java)
+
+    fetch "$java_file"
+
+    # Colors
+    GREEN='\033[0;32m'
+    RED='\033[0;31m'
+    NC='\033[0m' # No Color
+
+    # Compile the Java file
+    javac "$java_file.java"
+
+    # Check if compilation was successful
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Compilation failed. Exiting.${NC}"
+        exit 1
+    fi
+
+    # Get a list of input files
+    local input_files=(*.in)
+
+    # Variable to track whether there are mismatches
+    local mismatch_found=false
+
+    # Loop through each input file
+    for input_file in "${input_files[@]}"; do
+        # Form the output file name based on the input file
+        local output_file="${input_file%.in}.ans"
+
+        # Execute the compiled Java program with the current input file
+        local java_output=$(java "$java_file" <"$input_file")
+
+        # Get the expected output
+        local expected_output=$(cat "$output_file")
+
+        # Compare the generated output with the expected output
+        if [ "$java_output" != "$expected_output" ]; then
+            if [ "$mismatch_found" = false ]; then
+                echo "------------------------------------------------------"
+            fi
+            echo -e "${RED}Mismatch found for input file: $input_file${NC}"
+            echo -e "${RED}  Outcome:${NC}"
+            echo -e "${RED}$java_output${NC}" | sed 's/^/  /' # Add two spaces of indentation to each line
+            echo -e "${RED}  Expected:${NC}"
+            echo -e "${RED}$expected_output${NC}" | sed 's/^/  /' # Add two spaces of indentation to each line
+            echo "------------------------------------------------------"
+            mismatch_found=true
+        fi
+    done
+
+    # Clean up compiled class files
+    rm -f "$java_file.class"
+
+    # Print a message if everything is correct
+    if [ "$mismatch_found" = false ]; then
+        echo "---------------------------------"
+        echo -e "${GREEN}All tests passed${NC}"
+        echo "---------------------------------"
+    fi
+}
+case $1 in
+	"init")
+		init $2
+		exit
+		;;
+	"test")
+		test $2
+		exit
+		;;
+esac

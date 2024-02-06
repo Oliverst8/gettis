@@ -1,30 +1,35 @@
 function init() {
+
+    # Extract Java file name without extension
+    kattis_ID=$(basename "$1" .java)
+
     if [ "$#" -ne 1 ]; then
-        echo "Usage: $1 <KattisProblemId>"
+        echo "Usage: ${kattis_ID} <KattisProblemId>"
         exit 1
     fi
     if [ -d "./$1" ]; then
-        echo -n "Do you want to overwrite the current $1 directory? [y/N] "
+        echo -n "Do you want to overwrite the current ${kattis_ID} directory? [y/N] "
         read answer
         if [ "$answer" != "${answer#[Yy]}" ] ;then
-            rm -r "./$1"
-            mkdir "./$1"
+            rm -r "./${kattis_ID}"
+            mkdir "./${kattis_ID}"
         else
             echo "Could not initialize."
             exit
         fi
     else
-        mkdir "./$1"
+        mkdir "./${kattis_ID}"
     fi
-    cd "./$1"
-    fetch "$1"
+    cd "./$kattis_ID"
+    fetch "$kattis_ID"
     echo "import java.util.Scanner;
 
-public class $1 {
+public class ${kattis_ID} {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         
     }
-}" > "$1.java"
+}" > "${kattis_ID}.java"
 
 }
+#End of function
