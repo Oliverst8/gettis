@@ -19,6 +19,9 @@ extract_lines_from_files() {
             done < "$file"
         fi
     done
+    while IFS= read -r line; do
+        echo "$line"
+    done < "src/gettis.sh"
 }
 
 # Call the function to check and create build directory
