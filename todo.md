@@ -6,3 +6,4 @@
     -uninstall script
     -Show difference on errors (Maybe)
     -Add default case to switch case
+    -Switch to python?
