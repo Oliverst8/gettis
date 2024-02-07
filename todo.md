@@ -5,3 +5,4 @@
     -create readme
     -uninstall script
     -Show difference on errors (Maybe)
+    -Add default case to switch case
