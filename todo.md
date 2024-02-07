@@ -4,3 +4,4 @@
     -gettis submit
     -create readme
     -uninstall script
+    -Show difference on errors (Maybe)
