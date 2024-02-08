@@ -59,6 +59,8 @@ test() {
     # Variable to track whether there are mismatches
     local mismatch_found=false
 
+    printf "test_passed=" > gettis.out
+
     # Loop through each input file
     for input_file in "${input_files[@]}"; do
         # Increment total tests
@@ -79,7 +81,7 @@ test() {
             echo "------------------------------------------------------"
             echo -e "${RED}Mismatch found for input file: $input_file${NC}"
             echo -e "${RED}  Outcome:${NC}"
-            echo -e "${RED}$java_output${NC}" | sed 's/^/  /' # Add two spaces of indentation to each line
+            echo -e "${RED}  $java_output${NC}" | sed 's/^/  /' # Add two spaces of indentation to each line
             echo -e "${RED}  Expected:${NC}"
             echo -e "${RED}$expected_output${NC}" | sed 's/^/  /' # Add two spaces of indentation to each line
             printf "\n"
@@ -105,8 +107,10 @@ test() {
         echo "---------------------------------"
         echo -e "${GREEN}All tests passed${NC}"
         echo "---------------------------------"
+        printf "true" >> gettis.out
     else
         printf "\n"
+        printf "false" >> gettis.out
     fi
     
 }
