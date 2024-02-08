@@ -8,6 +8,21 @@ if [ ! "$(ls *.in 2>/dev/null)" ] || [ ! "$(ls *.ans 2>/dev/null)" ]; then
 	rm samples.zip
 fi
 }
+getMainFile() {
+
+  # Get a list of java files
+    local input_files=(*.java)
+
+    local name_of_directory=$(basename $PWD)
+
+    for file in ${input_files[@]}; do
+        if [[ $file == $name_of_directory* ]]; then
+            echo $file
+            return
+        fi
+    done
+    echo ""
+}
 function init() {
 
     # Extract Java file name without extension
@@ -56,7 +71,22 @@ update_progress_bar() {
 
 
 test() {
-    local java_file=$(basename "$1" .java)
+
+    # Sets the main file if there is no argument
+    if [ -z "$1" ]; then
+        local java_file=$(basename "$(getMainFile)" .java)
+    else
+        local java_file=$(basename "$1" .java)
+    fi
+
+    #Exits if no file found
+    if [ -z "$java_file" ]; then
+        echo "No main file found, please add the name of your main file as an argument."
+        exit 1
+    fi
+
+
+    
     local total_tests=0
     local passed_tests=0
     local progress=""
@@ -69,7 +99,14 @@ test() {
     WHITE='\033[0;37m'
     NC='\033[0m' # No Color
 
-    # Compile the Java file
+    # Compile the java files with the main files last
+
+    for file in *.java; do
+        if [[ $file != $java_file.java ]]; then
+            javac "$file"
+        fi
+    done
+
     javac "$java_file.java"
 
     # Check if compilation was successful
@@ -144,8 +181,22 @@ case $1 in
 		init $2
 		exit
 		;;
+	"i")
+		init $2
+		exit
+		;;
+	"t")
+		test $2
+		exit
+		;;
 	"test")
 		test $2
+		exit
+		;;
+	*)
+		echo "Invalid command"
+		echo "Usage: gettis [init/i] [project_name.filetype]"
+		echo "Usage: gettis [test/t] [project_name.filetype/empty]"
 		exit
 		;;
 esac
