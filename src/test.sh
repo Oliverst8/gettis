@@ -9,7 +9,22 @@ update_progress_bar() {
 
 
 test() {
-    local java_file=$(basename "$1" .java)
+
+    # Sets the main file if there is no argument
+    if [ -z "$1" ]; then
+        local java_file=$(basename "$(getMainFile)" .java)
+    else
+        local java_file=$(basename "$1" .java)
+    fi
+
+    #Exits if no file found
+    if [ -z "$java_file" ]; then
+        echo "No main file found, please add the name of your main file as an argument."
+        exit 1
+    fi
+
+
+    
     local total_tests=0
     local passed_tests=0
     local progress=""
@@ -22,7 +37,14 @@ test() {
     WHITE='\033[0;37m'
     NC='\033[0m' # No Color
 
-    # Compile the Java file
+    # Compile the java files with the main files last
+
+    for file in *.java; do
+        if [[ $file != $java_file.java ]]; then
+            javac "$file"
+        fi
+    done
+
     javac "$java_file.java"
 
     # Check if compilation was successful
