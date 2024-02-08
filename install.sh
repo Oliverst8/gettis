@@ -26,6 +26,7 @@ cp -f ./build/gettis ~/bin/gettis
 if ! grep -q "export PATH=\$PATH:~/bin" ~/.bashrc; then
     echo "# export ~/bin to PATH - required for gettis to run" >> ~/.bashrc
     echo "export PATH=\$PATH:~/bin" >> ~/.bashrc
+    echo "Added ~/bin to PATH"
 fi
 
 echo "Succesfully installed gettis"
