@@ -7,8 +7,15 @@ else
     mkdir ~/bin
 fi
 
+if [ -d ~/bin/gettis ]; then
+    echo "/bin/gettis exists."
+else
+    echo "Creating /bin/gettis directory..."
+    mkdir ~/bin/gettisSYS
+fi
+
 if [ -f ~/bin/gettis ]; then
-    echo -n "gettis is already installed. Do you want to update? [Y/n] " 
+    echo -n "gettis is already installed. Do you want to update? [y/N] " 
     read answer
     if [ "$answer" != "${answer#[Yy]}" ] ;then
         echo "Updating gettis..."
@@ -21,6 +28,7 @@ else
 fi
 ./build.sh
 cp -f ./build/gettis ~/bin/gettis
+cp -f ./src/submit.py ~/bin/gettisSYS/submit.py
 
 
 if ! grep -q "export PATH=\$PATH:~/bin" ~/.bashrc; then
